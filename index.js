@@ -14,6 +14,9 @@ const events = [
     "pointermove",
     "pointerrawupdate",
     "pointerup",
+    "reactpress",
+    "reactmove",
+    "reactrelease",
     "jstodefpress",
     "jstodefmove",
     "jstodefrelease",
@@ -80,7 +83,7 @@ function renderSession() {
         const rafTimeDiv = document.createElement("div");
         rafTimeDiv.className = `raf time`;
         rafTimeDiv.style.left = `${((raf.actual - start) * timeScale) + MARGIN_PX}px`;
-        rafTimeDiv.textContent = `${Math.round(raf.actual - start)}ms`;
+        rafTimeDiv.innerHTML = `${Math.round(raf.actual - start)}ms`;
         chart.appendChild(rafTimeDiv);
         for (const type of ["actual", "event"]) {
             const rafDiv = document.createElement("div");
@@ -139,7 +142,7 @@ function renderSession() {
                     timeDiv.className = `touch ${type} time`;
                     timeDiv.style.top = touchTop;
                     timeDiv.style.left = `${((touch[type] - start) * timeScale) + MARGIN_PX}px`;
-                    timeDiv.textContent = `${Math.round(touch[type] - start)}ms`;
+                    timeDiv.textContent = `${Math.round(touch[type] - start)}ms - ${touch[type] - start}`;
                     chart.appendChild(timeDiv);
                 }
             }
@@ -161,11 +164,11 @@ requestAnimationFrame(function rAF(time) {
 });
 
 function handleSessionStartStop(event) {
-    if (event === "pointerdown" || event === "defoldpress" || event === "jstodefpress") {
+    if (["pointerdown", "defoldpress", "jstodefpress", "reactpress"].includes(event)) {
         if (!isSessionActive) {
             startSession();
         }
-    } else if (event === "pointerup" || event === "defoldrelease" || event === "jstodefrelease") {
+    } else if (["pointerup", "defoldrelease", "jstodefrelease", "reactrelease"].includes(event)) {
         if (sessionEndTimer) {
             clearTimeout(sessionEndTimer);
         }
@@ -174,7 +177,7 @@ function handleSessionStartStop(event) {
 }
 
 for (const event of events) {
-    if (event.startsWith("defold") || event.startsWith("jstodef")) {
+    if (event.startsWith("defold") || event.startsWith("jstodef") || event.startsWith("react")) {
         continue;
     }
     tap.addEventListener(event, function(e) {
@@ -222,6 +225,18 @@ function onJsToDefInput(pressed, released, actual) {
         : released
             ? "jstodefrelease"
             : "jstodefmove";
+    handleSessionStartStop(event);
+    if (isSessionActive) {
+        sessionEventLog[event].push({ event: performance.now(), actual });
+    }
+}
+
+function onReactInput(type, actual) {
+    const event = type === 'pointerdown'
+        ? "reactpress"
+        : type === 'pointerup'
+            ? "reactrelease"
+            : "reactmove";
     handleSessionStartStop(event);
     if (isSessionActive) {
         sessionEventLog[event].push({ event: performance.now(), actual });

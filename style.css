@@ -47,7 +47,7 @@ body * {
 }
 
 #chart .raf {
-  height: 180px;
+  height: 252px;
   position: absolute;
   transform: translate(-50%, 0);
 }
@@ -74,14 +74,14 @@ body * {
 }
 
 #chart .defold {
-  top: 180px;
+  top: 252px;
   height: 269px;
   position: absolute;
   transform: translate(-50%, 0);
 }
 
 #chart .defold.time {
-  top: 180px;
+  top: 252px;
   transform: translate(-100%, 0);
   padding-right: 4px;
 }
@@ -129,17 +129,20 @@ body * {
 
 #chart .pointerdown,
 #chart .jstodefpress,
+#chart .reactpress,
 #chart .defoldpress {
   background-color: greenyellow;
 }
 #chart .pointermove,
 #chart .pointerrawupdate,
 #chart .jstodefmove,
+#chart .reactmove,
 #chart .defoldmove {
   background-color: lightpink;
 }
 #chart .pointerup,
 #chart .jstodefrelease,
+#chart .reactrelease,
 #chart .defoldrelease {
   background-color: lightcoral;
 }
@@ -157,11 +160,15 @@ body * {
   color: #eee;
 }
 
-#canvas-container {
+#canvas-container, #react-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   opacity: 0.1;
+}
+
+#react-container {
+  z-index: 10;
 }
